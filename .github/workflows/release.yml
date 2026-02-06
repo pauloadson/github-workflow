@@ -67,7 +67,8 @@ jobs:
               PR_TITLE=$(echo "$PR_DATA" | jq -r '.title')
               PR_AUTHOR=$(echo "$PR_DATA" | jq -r '.user.login')
 
-              PRS=$(printf "%s\n- %s (#%s) - @%s" "$PRS" "$PR_TITLE" "$PR_NUMBER" "$PR_AUTHOR")
+              PRS=$(printf "%s\n- %s ([#%s](https://github.com/%s/pull/%s)) - @%s" \
+                "$PRS" "$PR_TITLE" "$PR_NUMBER" "${{ github.repository }}" "$PR_NUMBER" "$PR_AUTHOR")
 
             else
 
@@ -90,14 +91,14 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.tag.outputs.tag }}
-          name: ${{ steps.tag.outputs.tag }}
+          name: Nome que fica no release ${{ steps.tag.outputs.tag }}
           body: |
             ${{ steps.previous.outputs.previous_tag && format('**Full Changelog**: https://github.com/{0}/compare/{1}...{2}', github.repository, steps.previous.outputs.previous_tag, steps.tag.outputs.tag) || 'Initial release' }}
 
             ### Pull Requests
             ${{ steps.lists.outputs.prs }}
 
-            ### Commits Diretos
+            ### Commits
             ${{ steps.lists.outputs.commits }}
 
         env:
